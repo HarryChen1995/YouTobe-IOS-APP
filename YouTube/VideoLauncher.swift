@@ -12,6 +12,7 @@ class VideoPlayerView: UIView{
     let activityIndicator : UIActivityIndicatorView = {
        let avi = UIActivityIndicatorView()
         avi.style = UIActivityIndicatorView.Style.large
+        avi.color = .white
         avi.translatesAutoresizingMaskIntoConstraints = false
         avi.startAnimating()
     return avi
@@ -33,6 +34,8 @@ class VideoPlayerView: UIView{
     
         return view
     }()
+    
+    
     
     let videoLengthLabel: UILabel = {
         let label = UILabel()
@@ -99,6 +102,8 @@ class VideoPlayerView: UIView{
         controlsContainerView.addSubview(activityIndicator)
         activityIndicator.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        activityIndicator.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        activityIndicator.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
         controlsContainerView.addSubview(pausePlayButton)
         pausePlayButton.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
@@ -123,8 +128,21 @@ class VideoPlayerView: UIView{
         videoSlider.leftAnchor.constraint(equalTo: currenTimeLabel.rightAnchor, constant: 8 ).isActive = true
         videoSlider.heightAnchor.constraint(equalToConstant: 30).isActive = true
         backgroundColor = .black
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(displayControl)))
         
-        
+    }
+
+    var showControl = false
+    @objc func displayControl(){
+        if showControl {
+            controlsContainerView.alpha = 0
+            controlsContainerView.isUserInteractionEnabled = false
+        }else{
+            
+            controlsContainerView.alpha = 1
+            controlsContainerView.isUserInteractionEnabled = true
+        }
+        showControl = !showControl
     }
     var player: AVPlayer?
     private func setupPlayerView(){
@@ -160,6 +178,7 @@ class VideoPlayerView: UIView{
             controlsContainerView.backgroundColor = .clear
             pausePlayButton.isHidden = false
             isPlaying = true
+            showControl  = false
             if let duration = player?.currentItem?.duration{
             let seconds = CMTimeGetSeconds(duration)
             let secondsText = Int(seconds) % 60
