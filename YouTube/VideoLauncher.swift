@@ -81,9 +81,10 @@ class VideoPlayerView: UIView{
         }else{
             player?.play()
             pausePlayButton.setImage(UIImage(named: "pause"), for: .normal)
+            pausePlayButton.isHidden = true
+            
         }
    
-
         isPlaying = !isPlaying
     }
     private func setupGradientLayer(){
@@ -108,8 +109,8 @@ class VideoPlayerView: UIView{
         controlsContainerView.addSubview(pausePlayButton)
         pausePlayButton.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         pausePlayButton.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        pausePlayButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
-        pausePlayButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        pausePlayButton.widthAnchor.constraint(equalToConstant: 150).isActive = true
+        pausePlayButton.heightAnchor.constraint(equalToConstant: 150).isActive = true
         
         controlsContainerView.addSubview(videoLengthLabel)
         videoLengthLabel.rightAnchor.constraint(equalTo: rightAnchor, constant:  -8 ).isActive = true
@@ -132,17 +133,8 @@ class VideoPlayerView: UIView{
         
     }
 
-    var showControl = false
     @objc func displayControl(){
-        if showControl {
-            controlsContainerView.alpha = 0
-            controlsContainerView.isUserInteractionEnabled = false
-        }else{
-            
-            controlsContainerView.alpha = 1
-            controlsContainerView.isUserInteractionEnabled = true
-        }
-        showControl = !showControl
+        pausePlayButton.isHidden = false
     }
     var player: AVPlayer?
     private func setupPlayerView(){
@@ -176,9 +168,8 @@ class VideoPlayerView: UIView{
         if keyPath == "currentItem.loadedTimeRanges"{
             activityIndicator.stopAnimating()
             controlsContainerView.backgroundColor = .clear
-            pausePlayButton.isHidden = false
-            isPlaying = true
-            showControl  = false
+            //isPlaying = true
+            //showControl  = false
             if let duration = player?.currentItem?.duration{
             let seconds = CMTimeGetSeconds(duration)
             let secondsText = Int(seconds) % 60
