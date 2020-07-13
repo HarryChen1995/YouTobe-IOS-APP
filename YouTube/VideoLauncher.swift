@@ -146,6 +146,8 @@ class VideoPlayerView: UIView{
         playLayer.frame = self.frame
         player?.play()
         player?.addObserver(self, forKeyPath: "currentItem.loadedTimeRanges", options: .new, context: nil)
+        
+        player?.addObserver(self, forKeyPath: "timeControlStatus", options: [.old, .new], context: nil)
         let interval = CMTime(value: 1, timescale: 2)
         player?.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main, using: {(progressTime) in
             
@@ -166,10 +168,7 @@ class VideoPlayerView: UIView{
     }
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "currentItem.loadedTimeRanges"{
-            activityIndicator.stopAnimating()
             controlsContainerView.backgroundColor = .clear
-            //isPlaying = true
-            //showControl  = false
             if let duration = player?.currentItem?.duration{
             let seconds = CMTimeGetSeconds(duration)
             let secondsText = Int(seconds) % 60
@@ -177,6 +176,22 @@ class VideoPlayerView: UIView{
             videoLengthLabel.text = "\(minuteText):\(secondsText)"
             }
         }
+            if keyPath == "timeControlStatus", let change = change, let newValue = change[NSKeyValueChangeKey.newKey] as? Int, let oldValue = change[NSKeyValueChangeKey.oldKey] as? Int {
+                let oldStatus = AVPlayer.TimeControlStatus(rawValue: oldValue)
+                let newStatus = AVPlayer.TimeControlStatus(rawValue: newValue)
+                
+                if newStatus != oldStatus {
+                    DispatchQueue.main.async {
+                        if newStatus == .playing || newStatus == .paused {
+                            self.activityIndicator.stopAnimating()
+                        }else{
+                            self.activityIndicator.startAnimating()
+                        }
+                    }
+                }
+            
+        }
+        
     }
     required init?(coder: NSCoder) {
         super.init(coder:coder)
