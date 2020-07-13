@@ -82,9 +82,9 @@ class VideoPlayerView: UIView{
             player?.play()
             pausePlayButton.setImage(UIImage(named: "pause"), for: .normal)
             pausePlayButton.isHidden = true
+            showingControl = !showingControl
             
         }
-   
         isPlaying = !isPlaying
     }
     private func setupGradientLayer(){
@@ -132,9 +132,14 @@ class VideoPlayerView: UIView{
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(displayControl)))
         
     }
-
+    var showingControl = false
     @objc func displayControl(){
+        if !showingControl {
         pausePlayButton.isHidden = false
+        }else{
+            pausePlayButton.isHidden = true
+        }
+        showingControl = !showingControl
     }
     var player: AVPlayer?
     private func setupPlayerView(){
